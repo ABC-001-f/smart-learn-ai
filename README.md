@@ -1,13 +1,36 @@
 # LearnBond: money that moves when learning happens
 
+![LearnBond](thumbnail.png)
+
 > Built for the **PayPal AI Hackathon: Build What's Next with PayPal and AI** (2026).
-> HTML/CSS/JS front end · Google Gemini · PayPal **Sandbox** (test money only) · AG Grid · optional zero-dependency Python server for Render.
+> HTML/CSS/JS front end · Google Gemini · PayPal **Sandbox** (test money only) · AG Grid · optional zero-dependency Python server on Render.
+
+**🔗 Live demo:** _add your Render URL here_ (free plan: the first load can take about 50 seconds while it wakes up)
 
 Education apps charge a subscription whether or not anyone learns. **LearnBond flips that.** A sponsor (a parent, an aunt abroad, an employer) funds a learning goal through PayPal. The money is held until it is earned. An **AI Tutor** teaches the student. An independent **AI Examiner** questions the student to check the Tutor's claim that they're ready. **Only when the Examiner verifies mastery is the money released.** A **Study Kit Agent** spends a small, sponsor-mandated budget on the materials that close the gaps the Examiner found. Money that isn't earned goes back to the sponsor.
 
 ---
 
-## Quick start (2 minutes)
+## For judges: a 60-second tour
+
+1. Open the live demo. A **setup guide** appears; on the live demo everything is already connected, so just close it.
+2. Click **✨ Fill example** → **Design milestones with AI** → **Create goal & go to funding**.
+3. Pay with the PayPal button using any PayPal **Sandbox personal account** (test money only).
+4. Click **Open student view**, chat with the Tutor, then **I'm ready: call the Examiner** and answer in your own words.
+5. Back on the sponsor tab, watch the **payout**, the **Study Kit Agent** and the **money ledger** update live. Then click **Close goal** to see the refund.
+
+### Where to look for each sponsor prize
+
+| Category | Where it lives | What to look for |
+|---|---|---|
+| **PayPal + AI** | `js/paypal.js`, `server.py`, `js/goals.js` | Smart Buttons checkout; **Payouts API** pays the student only after the AI Examiner's verdict passes code guardrails; **Refunds API** returns unearned money to each contributor's original capture. |
+| **Agentic Commerce** | `js/agent.js`, `js/ai.js` (Study Kit Agent) | Gemini plans searches → code runs the catalog search tool → Gemini picks a cart → **code enforces the sponsor's mandate** (catalog prices, per-item cap, budget, auto-buy limit) → PayPal payout to the store. Full reasoning trace shown on the dashboard. |
+| **AG Grid** | `js/grids.js`, `js/create.js`, `js/goal.js` | Portfolio grid (progress bars, pinned totals, click-through), money ledger (signed amounts, PayPal references, pinned "held now", cell flashes), audit log (floating filters, quick search, hash tooltips). All three export to CSV. |
+| **Render** | `render.yaml`, `server.py` | One-click Blueprint; secrets live in Render env vars; health check on `/api/config`. |
+
+---
+
+## Run it yourself (2 minutes)
 
 **Option A: just open it.** Double-click `index.html`. A **setup guide** pops up on first launch and walks you through *Settings → Gemini key → PayPal Sandbox client ID*. Skip it to explore in demo mode (simulated AI and payments).
 
@@ -103,7 +126,7 @@ requirements.txt    Empty on purpose: standard library only
 run.bat / run.sh    Create .venv on first run and start the server
 ```
 
-## Demo script (≈3 minutes)
+## Full guided tour (≈3 minutes)
 
 1. **Setup**: the setup guide appears; show the green ✓ checklist (or click *Explore in demo mode*).
 2. **Create**: *Fill example* → *Design milestones with AI*. Gemini splits $60 into three milestones, plus a $12 study-kit mandate.

@@ -6,3 +6,6 @@ __pycache__/
 .venv/
 venv/
 .env
+
+# Personal notes, submission text and guides (never pushed)
+private/
