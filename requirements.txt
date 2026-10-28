@@ -1,0 +1,2 @@
+# LearnBond's server uses only the Python standard library (Python 3.9+).
+# Nothing to install: this file exists so Render and `pip install -r requirements.txt` work as expected.

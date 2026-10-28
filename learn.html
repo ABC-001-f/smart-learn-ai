@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Student Study Room · LearnBond</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html">Learn<span>Bond</span></a>
+    <div id="modes" class="modes"></div>
+  </header>
+
+  <main class="container">
+    <div id="loading" class="empty loading">Loading…</div>
+
+    <div id="app" class="hidden">
+      <section style="margin:8px 0 20px">
+        <p class="hint" style="margin:0" id="sponsor-line"></p>
+        <h1 id="title" style="margin:4px 0"></h1>
+        <div class="row"><span class="badge ok" id="earned"></span><span id="goal-status"></span></div>
+      </section>
+
+      <div id="not-active" class="card hidden"></div>
+
+      <div class="layout">
+        <aside>
+          <h2>Milestones</h2>
+          <nav class="ms-nav" id="ms-nav" aria-label="Milestones"></nav>
+          <div class="card kit-ask hidden" id="kit-card">
+            <h3 style="margin:0 0 4px">🛒 Need study materials?</h3>
+            <p class="hint" style="margin:0 0 10px">The Study Kit Agent can buy past papers, courses or supplies for the gaps the Examiner found, paid by your sponsor through PayPal, within their limits.</p>
+            <form id="kit-form">
+              <input id="kit-request" maxlength="300" placeholder="e.g. more practice on word problems">
+              <button class="btn small" type="submit" id="kit-btn" style="margin-top:8px;width:100%">Ask the agent</button>
+            </form>
+            <div id="kit-result" class="hint" style="margin-top:10px"></div>
+          </div>
+        </aside>
+
+        <section>
+          <!-- Tutor -->
+          <div class="card" id="tutor-card">
+            <div class="row" style="margin-bottom:6px">
+              <h2 style="margin:0;flex:1" id="tutor-title">Tutor</h2>
+              <button class="btn" id="ready-btn">I'm ready: call the Examiner</button>
+            </div>
+            <p class="hint" id="tutor-objectives"></p>
+            <div class="chat" id="tutor-chat" aria-live="polite"></div>
+            <form class="composer" id="tutor-form">
+              <textarea id="tutor-input" placeholder="Ask the Tutor anything about this milestone…" maxlength="4000" required></textarea>
+              <button class="btn" type="submit">Send</button>
+            </form>
+          </div>
+
+          <!-- Exam -->
+          <div class="card hidden" id="exam-card">
+            <div class="row" style="margin-bottom:12px">
+              <h2 style="margin:0;flex:1">Mastery exam</h2>
+              <span class="badge info" id="exam-progress"></span>
+            </div>
+            <div class="agents">
+              <div class="agent tutor" id="claim"></div>
+              <div class="agent examiner">
+                <h3>Examiner</h3>
+                <p style="margin:0">I'm independent from the Tutor. I'll test that claim with follow-up questions. Answer in your own words; your answers are the evidence that releases your sponsor's money.</p>
+              </div>
+            </div>
+            <div class="chat" id="exam-chat" aria-live="polite"></div>
+            <form id="answer-form" style="margin-top:10px">
+              <textarea id="answer" placeholder="Type your answer, or press the mic and say it out loud…" maxlength="4000" required></textarea>
+              <div class="signals" id="signals"></div>
+              <div class="row" style="margin-top:8px">
+                <button type="button" class="btn secondary mic" id="mic-btn">🎙 Speak answer</button>
+                <span class="spacer"></span>
+                <button class="btn" type="submit" id="answer-btn">Submit answer</button>
+              </div>
+            </form>
+            <div id="verdict"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/settings.js"></script>
+  <script src="js/backend.js"></script>
+  <script src="js/guardrails.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/audit.js"></script>
+  <script src="js/paypal.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/goals.js"></script>
+  <script src="js/agent.js"></script>
+  <script src="js/onboarding.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/learn.js"></script>
+</body>
+</html>

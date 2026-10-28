@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Settings · LearnBond</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html">Learn<span>Bond</span></a>
+    <div id="modes" class="modes"></div>
+  </header>
+
+  <main class="container" style="max-width:720px">
+    <h1 style="margin-top:8px">Settings</h1>
+    <p class="hint">These keys are saved only in this browser (localStorage). They are never part of the GitHub repo. Leave a field empty to use simulated mode.</p>
+
+    <section class="card setup-card" id="setup-card">
+      <div class="row">
+        <h2 style="margin:0;flex:1">Setup checklist</h2>
+        <button type="button" class="btn secondary small" id="open-guide">Step-by-step guide</button>
+      </div>
+      <div id="checklist"></div>
+      <p class="hint" style="margin:10px 0 0" id="guide-hint">Fill in steps 1 and 2 below, click <b>Save settings</b>, and the checklist turns green.</p>
+    </section>
+
+    <form class="card" id="settings-form">
+      <fieldset>
+        <legend>Google Gemini (the AI)</legend>
+        <label>Gemini API key
+          <input name="geminiKey" type="password" autocomplete="off" placeholder="Paste your key from Google AI Studio">
+          <span class="hint">Get one free at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>. Use a test key: anyone using this browser can read it.</span>
+        </label>
+        <label style="margin-top:12px">Model
+          <input name="geminiModel" placeholder="gemini-2.5-flash">
+        </label>
+        <div class="row" style="margin-top:12px">
+          <button type="button" class="btn secondary small" id="test-gemini">Test Gemini</button>
+          <span class="hint" id="test-result"></span>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>PayPal Sandbox (test money only)</legend>
+        <label>Sandbox client ID
+          <input name="paypalClientId" autocomplete="off" placeholder="Sandbox app client ID from developer.paypal.com">
+          <span class="hint">Only the public client ID. Never put your PayPal secret here. Leave empty to use the server's client ID (if a server is running) or a shared demo Sandbox app.</span>
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Server: real payouts, refunds &amp; agent purchases (optional)</legend>
+        <p class="hint" style="margin:0 0 8px">These need the PayPal <b>secret</b>, which must never be typed into a browser. Put it in a <code>.env</code> file next to <code>server.py</code> (copy <code>.env.example</code>) and start the server with <code>run.bat</code> (Windows) or <code>./run.sh</code>, or deploy to Render with <code>render.yaml</code>.</p>
+        <div id="server-status" class="hint"></div>
+      </fieldset>
+
+      <div class="row">
+        <button class="btn" type="submit">Save settings</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn danger" id="reset-data">Delete all demo goals</button>
+      </div>
+    </form>
+  </main>
+
+  <script src="js/settings.js"></script>
+  <script src="js/backend.js"></script>
+  <script src="js/guardrails.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/audit.js"></script>
+  <script src="js/paypal.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/onboarding.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    const { getSettings, saveSettings, DEFAULT_MODEL } = LB.settings;
+    const { renderModes, toast, withLoading } = LB.common;
+    const { resetAll } = LB.store;
+
+    const form = document.getElementById('settings-form');
+    const saved = LB.settings.savedSettings();
+    form.geminiKey.value = saved.geminiKey || '';
+    form.geminiModel.value = saved.geminiModel || getSettings().geminiModel;
+    form.paypalClientId.value = saved.paypalClientId || '';
+    renderModes(document.getElementById('modes'));
+
+    function renderChecklist() {
+      document.getElementById('checklist').innerHTML = LB.onboarding.checklist();
+      const b = LB.backend.status();
+      document.getElementById('server-status').innerHTML = b.online
+        ? `<span class="badge ok">✓ LearnBond server connected</span> Gemini on server: <b>${b.gemini ? 'yes' : 'no'}</b> · PayPal payouts &amp; refunds: <b>${b.paypalPayouts ? 'real Sandbox API calls' : 'simulated (no secret set)'}</b>`
+        : '<span class="badge warn">○ No server detected</span> The app is running as static files, so payouts and refunds are simulated.';
+    }
+    renderChecklist();
+    LB.backend.ready.then(renderChecklist);
+    document.getElementById('open-guide').addEventListener('click', () => LB.onboarding.open());
+    if (new URLSearchParams(location.search).get('from') === 'guide') {
+      document.getElementById('setup-card').classList.add('glow');
+      form.geminiKey.focus();
+    }
+
+    const read = () => ({
+      geminiKey: form.geminiKey.value.trim(),
+      geminiModel: form.geminiModel.value.trim() || DEFAULT_MODEL,
+      paypalClientId: form.paypalClientId.value.trim(),
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      try {
+        saveSettings(read());
+        renderModes(document.getElementById('modes'));
+        renderChecklist();
+        toast('Settings saved.');
+      } catch {
+        toast('Could not save. Is browser storage blocked?', true);
+      }
+    });
+
+    document.getElementById('test-gemini').addEventListener('click', async () => {
+      const { geminiKey, geminiModel } = read();
+      const out = document.getElementById('test-result');
+      if (!geminiKey) return (out.textContent = 'Enter a key first.');
+      out.textContent = '';
+      try {
+        const res = await withLoading(document.getElementById('test-gemini'), 'Testing…', () => fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(geminiModel)}:generateContent`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': geminiKey },
+          body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: 'Reply with the single word: ready' }] }] }),
+        }));
+        const json = await res.json();
+        out.textContent = res.ok ? `✓ ${geminiModel} works.` : `✗ ${json.error?.message || res.status}`;
+      } catch (err) {
+        out.textContent = `✗ ${err.message}`;
+      }
+    });
+
+    document.getElementById('reset-data').addEventListener('click', () => {
+      if (!confirm('Delete every goal, exam and audit entry stored in this browser?')) return;
+      resetAll();
+      toast('Demo data deleted.');
+    });
+  </script>
+</body>
+</html>

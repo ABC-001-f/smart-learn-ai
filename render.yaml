@@ -1,0 +1,24 @@
+# One-click deploy: Render Dashboard → New → Blueprint → pick this repo.
+# Python standard library only, so there is nothing to install.
+# Secrets are marked sync:false, so Render asks you for them and they never live in the repo.
+services:
+  - type: web
+    name: learnbond
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python server.py
+    healthCheckPath: /api/config
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_CLIENT_SECRET
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      - key: STORE_MERCHANT_EMAIL
+        sync: false

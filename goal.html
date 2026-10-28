@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sponsor Dashboard · LearnBond</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html">Learn<span>Bond</span></a>
+    <div id="modes" class="modes"></div>
+  </header>
+
+  <main class="container">
+    <div id="loading" class="empty loading">Loading goal…</div>
+
+    <div id="app" class="hidden">
+      <section style="margin:8px 0 20px">
+        <div class="row">
+          <h1 id="title" style="margin:0;flex:1;min-width:240px"></h1>
+          <span id="status"></span>
+        </div>
+        <p class="hint" id="subtitle" style="margin-top:6px"></p>
+        <div class="row">
+          <a class="btn secondary small" id="student-link" target="_blank" rel="noopener">Open student view ↗</a>
+          <button class="btn secondary small" id="copy-link">Copy student link</button>
+        </div>
+      </section>
+
+      <section class="stats" id="stats"></section>
+      <div class="bar" id="money-bar" style="margin:-8px 0 24px" aria-hidden="true"></div>
+
+      <section class="card" id="fund-card">
+        <h2>Fund this goal</h2>
+        <p class="hint" id="fund-hint"></p>
+        <div class="grid" style="max-width:520px">
+          <label>Amount (USD)<input id="fund-amount" type="number" min="1" step="0.01"></label>
+          <label>Your name<input id="fund-name" maxlength="80"></label>
+        </div>
+        <div id="paypal-buttons" style="max-width:420px;margin-top:14px"></div>
+        <button class="btn money hidden" id="sim-pay" style="margin-top:14px">Simulate PayPal payment</button>
+      </section>
+
+      <section class="card">
+        <h2>Milestones</h2>
+        <div id="milestones"></div>
+      </section>
+
+      <section class="card" id="agent-card">
+        <div class="row" style="margin-bottom:6px">
+          <h2 style="margin:0;flex:1">🛒 Study Kit Agent <span class="badge info" style="vertical-align:middle">agentic commerce</span></h2>
+          <span id="mandate-badge"></span>
+        </div>
+        <p class="hint">An AI agent reads the learning gaps the Tutor and Examiner found, searches the study store, and buys what will close them. It is paid through PayPal from the held funds, but <strong>only within your mandate</strong>. Code checks every price, limit and item, and the agent cannot change those rules.</p>
+        <div id="mandate" class="mandate"></div>
+        <form id="agent-form" class="row" style="margin-top:14px">
+          <input id="agent-request" maxlength="300" placeholder="Optional: what does the student need? e.g. &quot;practice for word problems&quot;" style="flex:1;min-width:240px">
+          <button class="btn" type="submit" id="agent-run">Run shopping agent</button>
+        </form>
+        <div id="carts"></div>
+      </section>
+
+      <section class="card" id="contrib-card">
+        <div class="row" style="margin-bottom:10px">
+          <h2 style="margin:0;flex:1">Money ledger</h2>
+          <div class="row grid-tools">
+            <input type="search" id="ledger-search" placeholder="Filter ledger…" aria-label="Filter ledger">
+            <button type="button" class="btn secondary small" id="ledger-export">Export CSV</button>
+          </div>
+        </div>
+        <p class="hint">Every dollar in and out: sponsor captures, student payouts, agent purchases and refunds, with PayPal references. The pinned row shows what is still held.</p>
+        <div id="ledger-grid" class="ag-host"></div>
+        <div id="trail"></div>
+      </section>
+
+      <section class="card">
+        <h2>Guardrails on the AI</h2>
+        <div id="guardrails"></div>
+        <div class="row" style="margin-top:16px">
+          <button class="btn danger" id="close-btn">Close goal &amp; refund unearned funds</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="row" style="margin-bottom:10px">
+          <h2 style="margin:0">Audit log</h2>
+          <span id="chain"></span>
+        </div>
+        <p class="hint">Every action by the AI agents, the guardrails, PayPal and people is logged here. Each entry is SHA-256 hash-chained to the one before, so editing history breaks the chain. Filter by actor (try <code>agent</code> or <code>guardrails</code>) or export it as evidence.</p>
+        <div class="row grid-tools" style="margin-bottom:10px">
+          <input type="search" id="audit-search" placeholder="Search audit log…" aria-label="Search audit log">
+          <button type="button" class="btn secondary small" id="audit-export">Export CSV</button>
+        </div>
+        <div id="audit-grid" class="ag-host tall"></div>
+        <div class="audit-wrap" id="audit-table"><table class="audit"><thead><tr><th>#</th><th>Time</th><th>Actor</th><th>Action</th><th>Details</th><th>Hash</th></tr></thead><tbody id="audit"></tbody></table></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@33.3.0/dist/ag-grid-community.min.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/backend.js"></script>
+  <script src="js/guardrails.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/audit.js"></script>
+  <script src="js/paypal.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/goals.js"></script>
+  <script src="js/agent.js"></script>
+  <script src="js/grids.js"></script>
+  <script src="js/onboarding.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/goal.js"></script>
+</body>
+</html>
